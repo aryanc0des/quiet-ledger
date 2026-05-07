@@ -28,7 +28,8 @@ export function EntryCard({ entry }: EntryCardProps) {
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!confirmDelete) {
       setConfirmDelete(true);
       return;
@@ -39,6 +40,11 @@ export function EntryCard({ entry }: EntryCardProps) {
     } finally {
       setDeleting(false);
     }
+  };
+
+  const handleCancel = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setConfirmDelete(false);
   };
 
   return (
@@ -55,7 +61,7 @@ export function EntryCard({ entry }: EntryCardProps) {
         </div>
 
         {/* Delete button — appears on hover */}
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
           <button
             onClick={handleDelete}
             disabled={deleting}
@@ -76,8 +82,8 @@ export function EntryCard({ entry }: EntryCardProps) {
           </button>
           {confirmDelete && !deleting && (
             <button
-              onClick={() => setConfirmDelete(false)}
-              className="ml-1 text-xs text-ink-muted dark:text-zinc-500 hover:text-ink"
+              onClick={handleCancel}
+              className="text-xs text-ink-muted dark:text-zinc-500 hover:text-ink transition-colors"
             >
               cancel
             </button>
