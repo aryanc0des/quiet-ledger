@@ -7,19 +7,19 @@ interface EntryCardProps {
   entry: Entry;
 }
 
+function toUTC(iso: string): Date {
+  return new Date(iso.endsWith("Z") ? iso : iso + "Z");
+}
+
 function formatDate(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
+  return toUTC(iso).toLocaleDateString("en-US", {
+    weekday: "long", month: "long", day: "numeric",
   });
 }
 
 function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
+  return toUTC(iso).toLocaleTimeString("en-US", {
+    hour: "numeric", minute: "2-digit",
   });
 }
 
@@ -48,8 +48,7 @@ export function EntryCard({ entry }: EntryCardProps) {
   };
 
   return (
-    <article className="group relative animate-slide-up rounded-2xl border border-border dark:border-border-dark bg-white dark:bg-[#252523] px-6 py-5 shadow-sm hover:shadow-md transition-shadow duration-200">
-      {/* Date + time */}
+    <article className="group relative animate-slide-up rounded-2xl border border-border dark:border-border-dark bg-white dark:bg-[#252523] px-5 py-4 md:px-6 md:py-5 shadow-sm hover:shadow-md transition-shadow duration-200">
       <div className="flex items-center justify-between mb-3">
         <div>
           <p className="font-serif text-sm text-ink-soft dark:text-zinc-400 italic">
@@ -60,7 +59,6 @@ export function EntryCard({ entry }: EntryCardProps) {
           </p>
         </div>
 
-        {/* Delete button — appears on hover */}
         <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
           <button
             onClick={handleDelete}
@@ -72,13 +70,7 @@ export function EntryCard({ entry }: EntryCardProps) {
                 : "text-ink-muted hover:text-rose-pastel dark:text-zinc-500",
             ].join(" ")}
           >
-            {deleting ? (
-              <LoadingSpinner size={12} />
-            ) : confirmDelete ? (
-              "sure?"
-            ) : (
-              "delete"
-            )}
+            {deleting ? <LoadingSpinner size={12} /> : confirmDelete ? "sure?" : "delete"}
           </button>
           {confirmDelete && !deleting && (
             <button
@@ -91,7 +83,6 @@ export function EntryCard({ entry }: EntryCardProps) {
         </div>
       </div>
 
-      {/* Content */}
       <p className="font-sans text-[15px] leading-relaxed text-ink dark:text-zinc-200 whitespace-pre-wrap">
         {entry.content}
       </p>

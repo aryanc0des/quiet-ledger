@@ -23,8 +23,9 @@ export function Layout({ children }: LayoutProps) {
 
   return (
     <div className="flex min-h-screen bg-parchment dark:bg-[#1C1C1A] text-ink dark:text-zinc-200 font-sans">
-      {/* ── Sidebar ──────────────────────────────────────────────────────────── */}
-      <aside className="fixed inset-y-0 left-0 z-10 flex w-52 flex-col border-r border-border dark:border-border-dark bg-white/60 dark:bg-[#1C1C1A]/80 backdrop-blur-md px-6 py-8">
+
+      {/* ── Desktop sidebar (hidden on mobile) ───────────────────────────────── */}
+      <aside className="hidden md:flex fixed inset-y-0 left-0 z-10 w-52 flex-col border-r border-border dark:border-border-dark bg-white/60 dark:bg-[#1C1C1A]/80 backdrop-blur-md px-6 py-8">
         {/* Wordmark */}
         <div className="mb-10">
           <h1 className="font-serif text-xl text-ink dark:text-zinc-100 leading-tight tracking-tight">
@@ -76,11 +77,46 @@ export function Layout({ children }: LayoutProps) {
         </div>
       </aside>
 
-      {/* ── Main content ─────────────────────────────────────────────────────── */}
-      {/* max-w-3xl removed so Dashboard can use a two-column layout freely */}
-      <main className="ml-52 flex-1 min-h-screen px-10 py-10">
+      {/* ── Main content ──────────────────────────────────────────────────────── */}
+      <main className="w-full md:ml-52 flex-1 min-h-screen px-4 py-6 md:px-10 md:py-10 pb-24 md:pb-10">
+        {/* Mobile header */}
+        <div className="flex md:hidden items-center justify-between mb-6">
+          <h1 className="font-serif text-lg text-ink dark:text-zinc-100 leading-tight">
+            Quiet<span className="italic text-sage-700 dark:text-sage-200">Ledger</span>
+          </h1>
+          {state.user?.picture && (
+            <img
+              src={state.user.picture}
+              alt={state.user.name}
+              className="h-7 w-7 rounded-full object-cover opacity-80"
+            />
+          )}
+        </div>
+
         {children}
       </main>
+
+      {/* ── Mobile bottom nav (hidden on desktop) ────────────────────────────── */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-10 flex border-t border-border dark:border-border-dark bg-white/80 dark:bg-[#1C1C1A]/90 backdrop-blur-md">
+        {NAV.map(({ to, label, icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={to === "/"}
+            className={({ isActive }) =>
+              [
+                "flex flex-1 flex-col items-center justify-center py-3 gap-1 text-[10px] transition-colors",
+                isActive
+                  ? "text-sage-700 dark:text-sage-200"
+                  : "text-ink-muted dark:text-zinc-500",
+              ].join(" ")
+            }
+          >
+            <span className="text-base leading-none">{icon}</span>
+            {label}
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 }

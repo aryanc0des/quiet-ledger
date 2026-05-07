@@ -3,14 +3,12 @@ import { useApp } from "@/store/AppContext";
 import { EntryCard } from "@/components/EntryCard";
 import { EmptyState, ErrorState, LoadingSpinner } from "@/components/States";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
 interface Entry {
   id: string;
   content: string;
   created_at: string;
 }
 
-// ── Quotes ────────────────────────────────────────────────────────────────────
 const QUOTES: { text: string; author: string }[] = [
   { text: "Fill your paper with the breathings of your heart.", author: "William Wordsworth" },
   { text: "Journal writing is a voyage to the interior.", author: "Christina Baldwin" },
@@ -64,19 +62,18 @@ const QUOTES: { text: string; author: string }[] = [
   { text: "A moment of patience in a moment of anger saves a thousand moments of regret.", author: "Anonymous" },
 ];
 
-/** Returns the same quote for the entire calendar day. */
-function getDailyQuote(): { text: string; author: string } {
+function getDailyQuote() {
   const today = new Date();
-  const seed =
-    today.getFullYear() * 10000 +
-    (today.getMonth() + 1) * 100 +
-    today.getDate();
+  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
   return QUOTES[seed % QUOTES.length];
+}
+
+function toUTC(iso: string): Date {
+  return new Date(iso.endsWith("Z") ? iso : iso + "Z");
 }
 
 const MAX_CHARS = 1000;
 
-// ── Component ─────────────────────────────────────────────────────────────────
 export function DashboardPage() {
   const { state, addEntry } = useApp();
   const [draft, setDraft] = useState("");
@@ -86,7 +83,6 @@ export function DashboardPage() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dailyQuote = getDailyQuote();
 
-  // Auto-grow textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -94,7 +90,6 @@ export function DashboardPage() {
     }
   }, [draft]);
 
-  // Close modal on Escape
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setSelectedEntry(null);
@@ -130,26 +125,22 @@ export function DashboardPage() {
   return (
     <>
       <div className="animate-fade-in">
-
         {/* Page title */}
-        <div className="mb-8">
-          <h2 className="font-serif text-3xl text-ink dark:text-zinc-100 italic">
+        <div className="mb-6 md:mb-8">
+          <h2 className="font-serif text-2xl md:text-3xl text-ink dark:text-zinc-100 italic">
             {greeting()}
           </h2>
           <p className="font-sans text-sm text-ink-muted dark:text-zinc-500 mt-1">
             {new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
+              weekday: "long", month: "long", day: "numeric",
             })}
           </p>
         </div>
 
-        {/* ── Row 1: compose + quote (same height via items-stretch) ─────────── */}
-        <div className="flex gap-6 items-stretch mb-8">
-
+        {/* Compose + quote row */}
+        <div className="flex gap-6 items-stretch mb-6 md:mb-8">
           {/* Compose box */}
-          <div className="flex-1 rounded-2xl border border-border dark:border-border-dark bg-white dark:bg-[#252523] shadow-sm flex flex-col">
+          <div className="flex-1 min-w-0 rounded-2xl border border-border dark:border-border-dark bg-white dark:bg-[#252523] shadow-sm flex flex-col">
             <textarea
               ref={textareaRef}
               value={draft}
@@ -159,44 +150,33 @@ export function DashboardPage() {
               onKeyDown={handleKeyDown}
               placeholder="What's on your mind today?"
               rows={4}
-              className="flex-1 w-full resize-none bg-transparent px-6 pt-5 pb-2 font-sans text-[15px] leading-relaxed text-ink dark:text-zinc-200 placeholder:text-ink-muted/50 dark:placeholder:text-zinc-600 focus:outline-none"
+              className="flex-1 w-full resize-none bg-transparent px-4 md:px-6 pt-5 pb-2 font-sans text-[15px] leading-relaxed text-ink dark:text-zinc-200 placeholder:text-ink-muted/50 dark:placeholder:text-zinc-600 focus:outline-none"
               aria-label="Write a journal entry"
             />
-
-            <div className="flex items-center justify-between px-6 pb-4">
-              <span
-                className={`font-sans text-xs tabular-nums ${
-                  charsLeft < 50
-                    ? "text-rose-pastel"
-                    : "text-ink-muted dark:text-zinc-500"
-                }`}
-              >
+            <div className="flex items-center justify-between px-4 md:px-6 pb-4">
+              <span className={`font-sans text-xs tabular-nums ${charsLeft < 50 ? "text-rose-pastel" : "text-ink-muted dark:text-zinc-500"}`}>
                 {charsLeft}
               </span>
-
               <div className="flex items-center gap-3">
                 {saveError && (
-                  <span className="text-xs text-rose-pastel animate-fade-in">
-                    {saveError}
-                  </span>
+                  <span className="text-xs text-rose-pastel animate-fade-in">{saveError}</span>
                 )}
                 <button
                   onClick={handleSave}
                   disabled={!draft.trim() || saving}
-                  className="flex items-center gap-2 rounded-full bg-sage-500 px-5 py-2 font-sans text-sm text-white transition-all hover:bg-sage-700 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 rounded-full bg-sage-500 px-4 md:px-5 py-2 font-sans text-sm text-white transition-all hover:bg-sage-700 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {saving ? <LoadingSpinner size={14} /> : null}
                   {saving ? "saving…" : "save entry"}
                 </button>
               </div>
             </div>
-
-            <p className="px-6 pb-3 font-sans text-[10px] text-ink-muted/50 dark:text-zinc-600">
+            <p className="px-4 md:px-6 pb-3 font-sans text-[10px] text-ink-muted/50 dark:text-zinc-600">
               ⌘ + Enter to save · encrypted before leaving your device
             </p>
           </div>
 
-          {/* Quote box — stretches to match compose box height */}
+          {/* Quote box — desktop only */}
           <div className="hidden lg:flex w-64 shrink-0 rounded-2xl border border-border dark:border-border-dark bg-white dark:bg-[#252523] shadow-sm flex-col justify-between px-6 py-6">
             <p className="font-sans text-[10px] uppercase tracking-widest text-ink-muted dark:text-zinc-500">
               today's quote
@@ -210,7 +190,7 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* ── Row 2: past entries — spans full width of both columns ─────────── */}
+        {/* Past entries */}
         <section>
           <h3 className="font-sans text-xs uppercase tracking-widest text-ink-muted dark:text-zinc-500 mb-4">
             past entries
@@ -245,39 +225,31 @@ export function DashboardPage() {
         </section>
       </div>
 
-      {/* ── Entry modal ───────────────────────────────────────────────────────── */}
+      {/* Entry modal */}
       {selectedEntry && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center px-4"
           role="dialog"
           aria-modal="true"
-          aria-label="Journal entry"
         >
-          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm"
             onClick={() => setSelectedEntry(null)}
           />
-
-          {/* Modal card */}
-          <div className="relative z-10 w-full max-w-lg rounded-2xl border border-border dark:border-border-dark bg-white dark:bg-[#252523] shadow-xl px-8 py-7 animate-fade-in">
+          <div className="relative z-10 w-full max-w-lg rounded-2xl border border-border dark:border-border-dark bg-white dark:bg-[#252523] shadow-xl px-6 md:px-8 py-6 md:py-7 animate-fade-in mx-4">
             <div className="flex items-start justify-between mb-5">
               <div>
                 <p className="font-serif text-sm italic text-ink dark:text-zinc-300">
-                  {new Date(selectedEntry.created_at).toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
+                  {toUTC(selectedEntry.created_at).toLocaleDateString("en-US", {
+                    weekday: "long", month: "long", day: "numeric",
                   })}
                 </p>
                 <p className="font-sans text-xs text-ink-muted dark:text-zinc-500 mt-0.5">
-                  {new Date(selectedEntry.created_at).toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
+                  {toUTC(selectedEntry.created_at).toLocaleTimeString("en-US", {
+                    hour: "numeric", minute: "2-digit",
                   })}
                 </p>
               </div>
-
               <button
                 onClick={() => setSelectedEntry(null)}
                 className="text-ink-muted dark:text-zinc-500 hover:text-ink dark:hover:text-zinc-200 transition-colors text-lg leading-none ml-4 mt-0.5"
@@ -286,12 +258,10 @@ export function DashboardPage() {
                 ✕
               </button>
             </div>
-
             <p className="font-sans text-[15px] leading-relaxed text-ink dark:text-zinc-200 whitespace-pre-wrap">
               {selectedEntry.content}
             </p>
-
-            <p className="mt-6 font-sans text-[10px] text-ink-muted/50 dark:text-zinc-600">
+            <p className="mt-6 font-sans text-[10px] text-ink-muted/50 dark:text-zinc-600 hidden md:block">
               Press Esc to close
             </p>
           </div>
