@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+    font-family: "DM Sans", system-ui, sans-serif;
+  }
+
+  * {
+    @apply box-border;
+  }
+
+  /* Scrollbar — subtle */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border dark:bg-border-dark rounded-full;
+  }
+
+  /* Smooth theme transition */
+  body {
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+}

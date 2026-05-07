@@ -1,0 +1,169 @@
+# =========================================
+# ROOT
+# =========================================
+
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*.pid
+*.seed
+*.out
+
+# =========================================
+# ENV FILES
+# =========================================
+
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# =========================================
+# PYTHON / FASTAPI
+# =========================================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+virtualenv/
+
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+
+# FastAPI / Uvicorn
+*.db
+*.sqlite3
+
+# =========================================
+# NODE / REACT / VITE
+# =========================================
+
+node_modules/
+
+# Vite
+vite.config.ts.timestamp-*
+*.tsbuildinfo
+
+# React build output
+dist/
+build/
+
+# npm / pnpm / yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================================
+# TYPESCRIPT
+# =========================================
+
+*.tsbuildinfo
+
+# =========================================
+# TAILWIND
+# =========================================
+
+.tailwind/
+
+# =========================================
+# TESTING
+# =========================================
+
+coverage/
+playwright-report/
+test-results/
+
+# =========================================
+# MONGODB
+# =========================================
+
+.mongodb/
+
+# =========================================
+# CACHE
+# =========================================
+
+.cache/
+.parcel-cache/
+.eslintcache
+
+# =========================================
+# MACOS
+# =========================================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# =========================================
+# WINDOWS
+# =========================================
+
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =========================================
+# LINUX
+# =========================================
+
+*~
+
+# =========================================
+# SECRETS / KEYS
+# =========================================
+
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Firebase / Google credentials
+google-credentials.json
+client_secret.json
+
+# =========================================
+# VERCEL / RENDER
+# =========================================
+
+.vercel/
+
+# =========================================
+# OPTIONAL GENERATED FILES
+# =========================================
+
+*.zip
+*.tar.gz
+
+# =========================================
+# EDITORS
+# =========================================
+
+.history/
