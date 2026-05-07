@@ -55,7 +55,10 @@ async function exportKey(key: CryptoKey): Promise<string> {
 
 async function importKey(encoded: string): Promise<CryptoKey> {
   const raw = fromBase64Url(encoded);
-  return crypto.subtle.importKey("raw", raw, ALGO, true, ["encrypt", "decrypt"]);
+  // Cast to ArrayBuffer to satisfy strict TypeScript — Uint8Array.buffer is
+  // typed as ArrayBufferLike which includes SharedArrayBuffer, but SubtleCrypto
+  // only accepts a plain ArrayBuffer.
+  return crypto.subtle.importKey("raw", raw.buffer as ArrayBuffer, ALGO, true, ["encrypt", "decrypt"]);
 }
 
 /**
@@ -65,11 +68,9 @@ async function importKey(encoded: string): Promise<CryptoKey> {
 export async function getOrCreateKey(userId: string): Promise<CryptoKey> {
   const storageKey = `${STORAGE_PREFIX}${userId}`;
   const stored = localStorage.getItem(storageKey);
-
   if (stored) {
     return importKey(stored);
   }
-
   const key = await generateKey();
   const exported = await exportKey(key);
   localStorage.setItem(storageKey, exported);
@@ -89,16 +90,15 @@ export async function encryptText(
 ): Promise<EncryptedPayload> {
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const encoded = new TextEncoder().encode(plaintext);
-
   const cipherBuffer = await crypto.subtle.encrypt(
-    { name: "AES-GCM", iv },
+    // Cast iv.buffer for the same ArrayBufferLike → ArrayBuffer reason above
+    { name: "AES-GCM", iv: iv.buffer as ArrayBuffer },
     key,
     encoded
   );
-
   return {
     encrypted_content: toBase64Url(cipherBuffer),
-    iv: toBase64Url(iv.buffer),
+    iv: toBase64Url(iv.buffer as ArrayBuffer),
   };
 }
 
@@ -108,12 +108,10 @@ export async function decryptText(
 ): Promise<string> {
   const iv = fromBase64Url(payload.iv);
   const cipherBytes = fromBase64Url(payload.encrypted_content);
-
   const plainBuffer = await crypto.subtle.decrypt(
-    { name: "AES-GCM", iv },
+    { name: "AES-GCM", iv: iv.buffer as ArrayBuffer },
     key,
-    cipherBytes
+    cipherBytes.buffer as ArrayBuffer
   );
-
   return new TextDecoder().decode(plainBuffer);
 }
